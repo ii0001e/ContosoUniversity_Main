@@ -34,9 +34,13 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
+            string query = "SELECT * FROM Department WHERE DepartmentID = {0}";
             var department = await _context.Departments
+                .FromSqlRaw(query, id)
                 .Include(d => d.Administrator)
-                .FirstOrDefaultAsync(m => m.DepartmentID == id);
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
             if (department == null)
             {
                 return NotFound();
@@ -53,8 +57,8 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Departments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DepartmentID,Name,Budget,StartDate,InstructorID,RowVersion")] Department department)
@@ -78,9 +82,10 @@ namespace ContosoUniversity.Controllers
             }
 
             var department = await _context.Departments
-                    .Include(i => i.Administrator)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(m => m.DepartmentID == id);
+                .Include(i => i.Administrator)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.DepartmentID == id);
+
             if (department == null)
             {
                 return NotFound();
@@ -90,8 +95,8 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Departments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, byte[] rowVersion)
@@ -204,7 +209,6 @@ namespace ContosoUniversity.Controllers
 
             return View(department);
         }
-
         // POST: Departments/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -225,6 +229,7 @@ namespace ContosoUniversity.Controllers
                 return RedirectToAction(nameof(Delete), new { concurrencyError = true, id = department.DepartmentID });
             }
         }
+
         private bool DepartmentExists(int id)
         {
             return _context.Departments.Any(e => e.DepartmentID == id);
