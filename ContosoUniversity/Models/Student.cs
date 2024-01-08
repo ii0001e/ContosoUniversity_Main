@@ -8,7 +8,9 @@ namespace ContosoUniversity.Models
     {
         public int ID { get; set; }
         public string LastName { get; set; }
+        [StringLength(50)]
         public string FirstMidName { get; set; }
+        [StringLength(50)]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EnrollmentDate { get; set; }
